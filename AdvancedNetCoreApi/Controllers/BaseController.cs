@@ -7,31 +7,19 @@ namespace AdvancedNetCoreApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BaseController<T> : ControllerBase where T : class
+    public class BaseController<T> : ControllerBase where T : class, IEntity
     {
-        private Storage<T> _storage;
+        private IGenericRepository<T> _repository;
 
-        public BaseController(Storage<T> storage)
+        public BaseController(IGenericRepository<T> repository)
         {
-            _storage = storage;
+            _repository = repository;
         }
 
         [HttpGet]
         public IEnumerable<T> Get()
         {
-            return _storage.GetAll();
-        }
-
-        [HttpGet("{id}")]
-        public T Get(Guid id)
-        {
-            return _storage.GetById(id);
-        }
-
-        [HttpPost]
-        public void Post([FromBody]T value)
-        {
-            _storage.Add(Guid.NewGuid(), value);
+            return _repository.GetAll();
         }
     }
 }

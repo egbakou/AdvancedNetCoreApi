@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,7 +28,14 @@ namespace AdvancedNetCoreApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(typeof(Storage<>));
+            // DbContext for IdentyDbContext
+            services.AddDbContext<AdvancedDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("AdvancedApiDBConnexion")));
+
+            //services.AddSingleton(typeof(Storage<>));
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
             services.AddControllers(o => o.Conventions.Add(new GenericControllerRouteConvention()))
                 .ConfigureApplicationPartManager(m => m.FeatureProviders.Add(new RemoteControllerFeatureProvider()));
         }
